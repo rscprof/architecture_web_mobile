@@ -1,0 +1,184 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[russian]{babel}
+\usepackage{hyperref}
+\usepackage{amssymb}
+\usepackage[a4paper]{geometry}
+
+\usepackage{listings} % Используем стандартный listings (inputenc не нужен)
+\usepackage[dvipsnames]{xcolor}
+
+\lstdefinelanguage{Kotlin}{
+  comment=[l]{//},
+  commentstyle={\color{gray}\ttfamily},
+  emph={filter, first, firstOrNull, forEach, lazy, map, mapNotNull, println, launch, async, await, withContext, let, run, apply, also, takeIf, takeUnless, repeat, with},
+  emphstyle={\color{OrangeRed}},
+  identifierstyle=\color{black},
+  keywords={!in, !is, abstract, actual, annotation, as, as?, break, by, catch, class, companion, const, constructor, continue, crossinline, data, delegate, do, dynamic, else, enum, expect, external, false, field, file, final, finally, for, fun, get, if, import, in, infix, init, inline, inner, interface, internal, is, lateinit, noinline, null, object, open, operator, out, override, package, param, private, property, protected, public, receiver, reified, return, return@, sealed, set, setparam, super, suspend, tailrec, this, throw, true, try, typealias, typeof, val, var, vararg, when, where, while},
+  keywordstyle={\color{NavyBlue}\bfseries},
+  morecomment=[s]{/*}{*/},
+  morestring=[b]",
+  morestring=[s]{"""*}{*"""},
+  ndkeywords={@Composable, @Preview, @Deprecated, @JvmField, @JvmName, @JvmOverloads, @JvmStatic, @JvmSynthetic, Array, Byte, Double, Float, Int, Integer, Iterable, Long, Runnable, Short, String, Any, Unit, Nothing, Pair, Triple},
+  ndkeywordstyle={\color{BurntOrange}\bfseries},
+  sensitive=true,
+  stringstyle={\color{ForestGreen}\ttfamily}
+}
+
+
+\lstset{
+    inputencoding=utf8,
+    language=Python,
+    basicstyle=\ttfamily\footnotesize,
+    breaklines=true,
+    keepspaces=true,
+    showstringspaces=false,
+	literate={а}{{\selectfont\char224}}1
+             {б}{{\selectfont\char225}}1
+             {в}{{\selectfont\char226}}1
+             {г}{{\selectfont\char227}}1
+             {д}{{\selectfont\char228}}1
+             {е}{{\selectfont\char229}}1
+             {ё}{{\"e}}1
+             {ж}{{\selectfont\char230}}1
+             {з}{{\selectfont\char231}}1
+             {и}{{\selectfont\char232}}1
+             {й}{{\selectfont\char233}}1
+             {к}{{\selectfont\char234}}1
+             {л}{{\selectfont\char235}}1
+             {м}{{\selectfont\char236}}1
+             {н}{{\selectfont\char237}}1
+             {о}{{\selectfont\char238}}1
+             {п}{{\selectfont\char239}}1
+             {р}{{\selectfont\char240}}1
+             {с}{{\selectfont\char241}}1
+             {т}{{\selectfont\char242}}1
+             {у}{{\selectfont\char243}}1
+             {ф}{{\selectfont\char244}}1
+             {х}{{\selectfont\char245}}1
+             {ц}{{\selectfont\char246}}1
+             {ч}{{\selectfont\char247}}1
+             {ш}{{\selectfont\char248}}1
+             {щ}{{\selectfont\char249}}1
+             {ъ}{{\selectfont\char250}}1
+             {ы}{{\selectfont\char251}}1
+             {ь}{{\selectfont\char252}}1
+             {э}{{\selectfont\char253}}1
+             {ю}{{\selectfont\char254}}1
+             {я}{{\selectfont\char255}}1
+             {А}{{\selectfont\char192}}1
+             {Б}{{\selectfont\char193}}1
+             {В}{{\selectfont\char194}}1
+             {Г}{{\selectfont\char195}}1
+             {Д}{{\selectfont\char196}}1
+             {Е}{{\selectfont\char197}}1
+             {Ё}{{\"E}}1
+             {Ж}{{\selectfont\char198}}1
+             {З}{{\selectfont\char199}}1
+             {И}{{\selectfont\char200}}1
+             {Й}{{\selectfont\char201}}1
+             {К}{{\selectfont\char202}}1
+             {Л}{{\selectfont\char203}}1
+             {М}{{\selectfont\char204}}1
+             {Н}{{\selectfont\char205}}1
+             {О}{{\selectfont\char206}}1
+             {П}{{\selectfont\char207}}1
+             {Р}{{\selectfont\char208}}1
+             {С}{{\selectfont\char209}}1
+             {Т}{{\selectfont\char210}}1
+             {У}{{\selectfont\char211}}1
+             {Ф}{{\selectfont\char212}}1
+             {Х}{{\selectfont\char213}}1
+             {Ц}{{\selectfont\char214}}1
+             {Ч}{{\selectfont\char215}}1
+             {Ш}{{\selectfont\char216}}1
+             {Щ}{{\selectfont\char217}}1
+             {Ъ}{{\selectfont\char218}}1
+             {Ы}{{\selectfont\char219}}1
+             {Ь}{{\selectfont\char220}}1
+             {Э}{{\selectfont\char221}}1
+             {Ю}{{\selectfont\char222}}1
+             {Я}{{\selectfont\char223}}1
+}
+
+
+\begin{document}
+
+{
+    \thispagestyle{empty}
+    \vspace*{\fill}
+    \centering
+
+    \Large Сборник заданий для практических занятий \\
+    по курсу \\
+    <<Проектирование архитектуры мобильных и веб-приложений>> \\
+    \large
+    \vspace{40pt}
+    \vspace*{\fill}
+    \newpage
+}
+
+\tableofcontents
+\newpage
+
+\section{Общие сведения}
+
+Сборник содержит задания для практических занятий по курсу <<Проектирование архитектуры мобильных и веб-приложений>>.
+
+Лекции проходят в форме мастер-классов, соответственно практические занятия состоят в реализации
+заданий, которые повторяют по структуре работы, разобранные на мастер-классах.
+
+
+\section{Практические задания}
+\subsection{Задание №1 (простейший REST-API сервис)}
+
+Реализуйте с использованием FastAPI REST-API сервис, предоставляющий возможность добавить,
+удалить, изменить и получить все объекты согласно варианту, так же реализуйте возможность 
+получения части объектов для реализации поэтапной загрузки.
+
+Данные должны храниться в SQLite (или в СУБД по вашему выбору), 
+обращение должно осуществляться
+посредством ORM-библиотеки. Осуществляйте полную валидацию корректности передаваемых даных.
+
+\begin{enumerate}
+	\item База данных студентов группы. Поля: фамилия, имя, отчество, пол, возраст. 
+	\item База данных расходов семьи. Поля: товар, стоимость, количество, дата.
+	\item База данных загрузки аудиторий. Поля: дата и время, начала, дата и время конца, аудитория, преподаватель. 
+	\item База данных учета доходов и расходов предпринимателя. Поля: дата, тип операции (доход/расход), объем операции, описание, 
+корреспондент. 
+	\item База данных велоклуба. Поля: ФИО, тип велосипеда (MTB и др.), стаж участия в велоклубе.
+	\item База данных рейсов авиакомпании. Поля: дата и время вылета, аэропорт вылета, аэропорт прилета, дата и время прилета, 
+марка самолета.
+	\item База данных автобусных маршрутов. Поля: номер маршрута, номер парка, времена начала и окончания движения,
+длина маршрута в км. 
+	\item База данных электричек. Поля: вокзал, номер поезда, количество вагонов, тип (экспресс/обычный/спутник).
+	\item База данных товаров Интернет-магазина. Поля: название товара, категория, цена товара, описание товара. 
+	\item База заказов Интернет-магазина. Поля: ФИО заказчика, стоимость заказа, скидка (в процентах), адрес доставки. 
+	\item База данных выборов. Поля: участок, кандидат, количество голосов.
+	\item База данных практических работ. Поля: практическая работа, студент, номер варианта, номер уровня, 
+дата сдачи, оценка. 
+	\item База данных операторов и телеканалов. Поля: Название, тип (спутник, кабель, Интернет), охват (кол-во миллионов домохозяйств), минимальная
+стоимость подписки. 
+	\item База данных тарифных планов оператора. Поля: название, тип вещания (обычный/HD), флаг общедоступности. 
+	\item База данных незаконно огороженных берегов. Поля: водный объект, регион, GPS-координаты, длина недоступного участка берега, дата фиксации нарушения.
+	\item База данных временного прекращения движения в метро. Поля: дата и время начала прекращения
+движения, дата и время окончания прекращения движения, станция, станция (от какой до какой станции прекращено движение).
+	\item База данных проката фильмов. Поля: дата, время, кинотеатр, фильм, номер зала, тип сеанса (3D/Imax/обычный).
+	\item База данных эвакуированных автомобилей. Поля: улица, автостоянка, GPS-координаты, 
+тип нарушения (стоянка на проезжей части в месте запрета, стояна на тротуаре, стоянка на газоне), 
+номер автомобиля, тип автомобиля (легковой/грузовой малой тонажности/грузовой большой
+тонажности). 
+	\item База данных средних специальных учебных учреждений. Поля: название, адрес, тип подчинения (федеральный/региональный), 
+год основания, номер лицензии, номер аккредитации, дата окончания действия аккредитации. 
+	\item База данных поселков. Поля: название, девелопер, площадь, количество жителей.
+	\item База данных сухопутной военной техники. Поля: название, модель, разработчик, предприятие, стоимость, тип. 
+	\item База данных деревьев в городе. Поля: GPS-координаты, вид дерева, округ, год посадки. 
+	\item База данных футбольных матчей. Поля: дата, команда, команда, счет, место проведения. 
+	\item База данных обращений жителей. Поля: дата, время, объект, заявитель, содержание обращения (до 255 символов), 
+дата ответа, ответ на обращение (до 255 символов).
+	\item База данных студентов колледжа. Поля: ФИО, группа, признак бюджетности, 
+стипендия (нет/обычная/повышенная), флаг наличия социальной стипендии, дата рождения.
+\end{enumerate}
+
+
+\end{document}
