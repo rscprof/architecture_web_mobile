@@ -21,9 +21,28 @@ jobs:
         with:
           root_file: problems.tex
           compiler: pdflatex
+
+
+      - name: Compile LaTeX document
+        uses: dante-ev/latex-action@latest
+        with:
+          root_file: lecture_jwt.tex
+          compiler: xelatex
+      - name: Compile LaTeX document #2
+        uses: dante-ev/latex-action@latest
+        with:
+          root_file: lecture_jwt.tex
+          compiler: xelatex
+      - name: Compile LaTeX document #3
+        uses: dante-ev/latex-action@latest
+        with:
+          root_file: lecture_jwt.tex
+          compiler: xelatex
+
+
       - name: create directory
         shell: bash
-        run: mkdir dist &&  cp problems.pdf dist
+        run: mkdir dist &&  cp problems.pdf dist && cp lecture_jwt.pdf dist
       - name: Publish generated content to GitHub Pages
         uses: tsunematsu21/actions-publish-gh-pages@v1.0.2
         with:

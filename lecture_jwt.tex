@@ -1,0 +1,1079 @@
+\documentclass{article}
+\usepackage{fontspec}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+\usepackage{fontspec}
+\usepackage{polyglossia}
+
+% Основные шрифты (кроссплатформенные)
+\setmainfont{DejaVu Serif}
+\setsansfont{DejaVu Sans}
+\setmonofont{DejaVu Sans Mono}
+
+% Для polyglossia кириллица
+\newfontfamily\cyrillicfont{DejaVu Serif}
+\newfontfamily\cyrillicfontsf{DejaVu Sans}
+\newfontfamily\cyrillicfonttt{DejaVu Sans Mono}
+
+
+% Настройки русского языка
+\setdefaultlanguage{russian}
+\setotherlanguages{english}
+\defaultfontfeatures{Ligatures=TeX}
+
+
+% Page layout
+\geometry{a4paper, margin=1in}
+
+% Code listing setup
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{python}{
+    backgroundcolor=\color{backcolour},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=5pt,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=4,
+    frame=single,
+    framesep=3pt,
+    rulecolor=\color{gray},
+    xleftmargin=10pt,
+    xrightmargin=10pt,
+    framexleftmargin=10pt,
+    framexrightmargin=10pt,
+    framextopmargin=5pt,
+    framexbottommargin=5pt,
+    literate={á}{{\'a}}1 {ñ}{{\~n}}1 {é}{{\'e}}1
+}
+
+\lstdefinestyle{typescript}{
+    backgroundcolor=\color{backcolour},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{blue},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=5pt,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=2,
+    frame=single,
+    framesep=3pt,
+    rulecolor=\color{gray},
+    xleftmargin=10pt,
+    xrightmargin=10pt,
+    framexleftmargin=10pt,
+    framexrightmargin=10pt,
+    framextopmargin=5pt,
+    framexbottommargin=5pt
+}
+
+\lstdefinestyle{bash}{
+    backgroundcolor=\color{backcolour},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{blue},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=5pt,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=4,
+    frame=single,
+    framesep=3pt,
+    rulecolor=\color{gray},
+    xleftmargin=10pt,
+    xrightmargin=10pt,
+    framexleftmargin=10pt,
+    framexrightmargin=10pt,
+    framextopmargin=5pt,
+    framexbottommargin=5pt
+}
+
+\definecolor{delim}{RGB}{20,105,176}
+\definecolor{numb}{RGB}{106, 109, 32}
+\definecolor{string}{rgb}{0.64,0.08,0.08}
+
+\lstdefinestyle{json}{
+    numbers=left,
+    numberstyle=\small,
+    frame=single,
+    rulecolor=\color{black},
+    showspaces=false,
+    showtabs=false,
+    breaklines=true,
+    postbreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\color{gray}\hookrightarrow\space}},
+    breakatwhitespace=true,
+    basicstyle=\ttfamily\small,
+    upquote=true,
+    morestring=[b]",
+    stringstyle=\color{string},
+    literate=
+     *{0}{{{\color{numb}0}}}{1}
+      {1}{{{\color{numb}1}}}{1}
+      {2}{{{\color{numb}2}}}{1}
+      {3}{{{\color{numb}3}}}{1}
+      {4}{{{\color{numb}4}}}{1}
+      {5}{{{\color{numb}5}}}{1}
+      {6}{{{\color{numb}6}}}{1}
+      {7}{{{\color{numb}7}}}{1}
+      {8}{{{\color{numb}8}}}{1}
+      {9}{{{\color{numb}9}}}{1}
+      {\{}{{{\color{delim}{\{}}}}{1}
+      {\}}{{{\color{delim}{\}}}}}{1}
+      {[}{{{\color{delim}{[}}}}{1}
+      {]}{{{\color{delim}{]}}}}{1},
+}
+
+% Section formatting
+\titleformat{\section}{\Large\bfseries\scshape}{\thesection}{1em}{}
+\titleformat{\subsection}{\large\bfseries}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\bfseries}{\thesubsubsection}{1em}{}
+
+% Custom commands
+\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\myendpoint}[1]{\texttt{\color{blue}#1}}
+\newcommand{\httpmethod}[1]{\textbf{\color{red}#1}}
+\newcommand{\jwtclaim}[1]{\texttt{\color{purple}#1}}
+
+% Document metadata
+\title{Пошаговая реализация JWT-аутентификации для FastAPI + React}
+\author{Руководство по внедрению}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+    Данное руководство предоставляет пошаговый план внедрения системы регистрации, аутентификации и авторизации пользователей с использованием JWT-токенов в существующее приложение на FastAPI (бэкенд) и React (фронтенд). Каждый этап включает конкретные изменения кода, инструкции по тестированию и проверки работоспособности.
+\end{abstract}
+
+\tableofcontents
+
+\section{Исходное состояние}
+
+\begin{itemize}[leftmargin=*,noitemsep]
+    \item Сервер на FastAPI: CRUD для заметок без авторизации
+    \item Клиент на React + axios: работает с \myendpoint{/api/notes/}
+    \item БД: SQLite, модель \code{Note}
+    \item Роутинг настроен через \code{createBrowserRouter}
+\end{itemize}
+
+\section{Пошаговый план модернизации}
+
+\subsection{Этап 1. Добавить модель пользователя и обновить Note}
+
+\textbf{Цель:} БД поддерживает пользователей и привязку заметок.\\
+\textbf{Тест через Postman:} можно создать пользователя вручную, но API пока не трогаем.
+
+\subsubsection{Сервер (\texttt{database\_models.py})}
+
+\begin{lstlisting}[style=python,caption=database\_models.py]
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+
+class Base(DeclarativeBase):
+    pass
+
+class User(Base):
+    __tablename__ = "users"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    email: Mapped[str] = mapped_column(unique=True, index=True)
+    hashed_password: Mapped[str]
+
+class Note(Base):
+    __tablename__ = "notes"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    title: Mapped[str]
+    content: Mapped[str]
+    owner_id: Mapped[int]  # Новое поле для привязки к пользователю
+\end{lstlisting}
+
+\subsubsection{Обновить БД}
+
+Удалите \code{notes.db} (или используйте миграции, но для простоты — пересоздайте):
+
+\begin{lstlisting}[style=bash]
+rm notes.db
+\end{lstlisting}
+
+Запустите сервер — таблицы создадутся автоматически.
+
+\textbf{Проверка:} откройте \code{notes.db} (например, в DB Browser for SQLite) — должны быть таблицы \code{users} и \code{notes} с полем \code{owner\_id}.
+
+\subsection{Этап 2. Добавить security-утилиты и Pydantic-схемы}
+
+\textbf{Цель:} Механизм хеширования паролей и генерации JWT.
+
+\subsubsection{Установите зависимости}
+
+\begin{lstlisting}[style=bash]
+pip install python-jose[cryptography] passlib[bcrypt] pydantic[email]
+\end{lstlisting}
+
+\subsubsection{Создайте \texttt{security.py}}
+
+\begin{lstlisting}[style=python,caption=security.py]
+from datetime import datetime, timedelta, timezone
+from typing import Optional, Dict
+from jose import jwt
+from passlib.context import CryptContext
+
+# Настройки безопасности (в продакшене используйте переменные окружения)
+SECRET_KEY = "your-secret-key-change-in-production-2025"
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    """Проверяет соответствие пароля хешу"""
+    return pwd_context.verify(plain_password, hashed_password)
+
+def get_password_hash(password: str) -> str:
+    """Генерирует хеш пароля"""
+    return pwd_context.hash(password)
+
+def create_access_token(data: Dict[str, str], expires_delta: Optional[timedelta] = None) -> str:
+    """Создает JWT-токен с указанным временем жизни"""
+    to_encode = data.copy()
+    expire = datetime.now(timezone.utc) + (expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
+    to_encode.update({"exp": expire})
+    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+\end{lstlisting}
+
+\subsubsection{Обновите \texttt{validation\_models.py}}
+
+\begin{lstlisting}[style=python,caption=validation\_models.py]
+from pydantic import BaseModel, EmailStr, Field, ConfigDict
+from typing import Annotated, Optional
+
+# Типы с валидацией
+TitleType = Annotated[str, Field(min_length=1, max_length=100)]
+ContentType = Annotated[str, Field(min_length=1)]
+IdType = Annotated[int, Field(gt=0)]
+
+class NoteBase(BaseModel):
+    title: TitleType
+    content: ContentType
+
+class NoteCreate(NoteBase):
+    pass
+
+class NoteOut(NoteBase):
+    id: IdType
+    owner_id: IdType
+    
+    model_config = ConfigDict(from_attributes=True)
+
+# Схемы для аутентификации
+class UserCreate(BaseModel):
+    email: EmailStr
+    password: str = Field(min_length=6, max_length=100)
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+    
+class TokenData(BaseModel):
+    id: Optional[str] = None
+\end{lstlisting}
+
+\textbf{Проверка:} убедитесь, что сервер запускается без ошибок.
+
+\subsection{Этап 3. Реализовать \myendpoint{/register} и \myendpoint{/token}}
+
+\textbf{Цель:} Возможность зарегистрироваться и получить JWT.
+
+\subsubsection{Обновите \texttt{main.py} (частично — только auth-эндпоинты)}
+
+Добавьте в \code{main.py} \textbf{перед заметками} следующие импорты и зависимости:
+
+\begin{lstlisting}[style=python]
+from fastapi import Depends, HTTPException, status, APIRouter
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from sqlalchemy.orm import Session
+from jose import JWTError, jwt
+
+# Импорты локальных модулей
+from database import get_session, SessionLocal
+from database_models import User, Note
+from validation_models import NoteOut, NoteCreate, UserCreate, Token
+from security import (
+    verify_password,
+    get_password_hash,
+    create_access_token,
+    SECRET_KEY,
+    ALGORITHM,
+    ACCESS_TOKEN_EXPIRE_MINUTES
+)
+
+# OAuth2 схема для извлечения токена из заголовка
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
+def get_current_user(
+    token: str = Depends(oauth2_scheme),
+    session: Session = Depends(get_session)
+) -> User:
+    """Извлекает текущего пользователя из JWT-токена"""
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        user_id: str = payload.get("sub")
+        if user_id is None:
+            raise credentials_exception
+    except JWTError:
+        raise credentials_exception
+    
+    user = session.query(User).filter(User.id == int(user_id)).first()
+    if user is None:
+        raise credentials_exception
+    return user
+\end{lstlisting}
+
+Теперь добавьте эндпоинты аутентификации:
+
+\begin{lstlisting}[style=python,caption=auth\_endpoints.py]
+# Эндпоинты аутентификации
+@app.post("/register", response_model=Token, summary="Регистрация нового пользователя")
+def register(user: UserCreate, session: Session = Depends(get_session)):
+    """Регистрирует нового пользователя и возвращает JWT-токен"""
+    # Проверка на существование email
+    if session.query(User).filter(User.email == user.email).first():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Email already registered"
+        )
+    
+    # Хеширование пароля и сохранение пользователя
+    hashed_password = get_password_hash(user.password)
+    db_user = User(email=user.email, hashed_password=hashed_password)
+    session.add(db_user)
+    session.commit()
+    session.refresh(db_user)
+    
+    # Генерация JWT-токена
+    access_token = create_access_token(
+        data={"sub": str(db_user.id)},
+        expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    )
+    return {"access_token": access_token, "token_type": "bearer"}
+
+@app.post("/token", response_model=Token, summary="Получение JWT-токена")
+def login_for_access_token(
+    form_data: OAuth2PasswordRequestForm = Depends(),
+    session: Session = Depends(get_session)
+):
+    """Аутентифицирует пользователя и возвращает JWT-токен"""
+    # Поиск пользователя по email
+    user = session.query(User).filter(User.email == form_data.username).first()
+    
+    # Проверка существования пользователя и соответствия пароля
+    if not user or not verify_password(form_data.password, user.hashed_password):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect email or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+    # Генерация JWT-токена
+    access_token = create_access_token(
+        data={"sub": str(user.id)},
+        expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    )
+    return {"access_token": access_token, "token_type": "bearer"}
+\end{lstlisting}
+
+\textbf{Тест в Postman:}
+\begin{enumerate}[leftmargin=*,noitemsep]
+    \item \httpmethod{POST} \myendpoint{/register}
+    \begin{lstlisting}[style=json]
+{
+    "email": "test@example.com",
+    "password": "securepassword123"
+}
+    \end{lstlisting}
+    $\rightarrow$ получаете \code{access\_token}
+    
+    \item \httpmethod{POST} \myendpoint{/token} (Content-Type: \code{application/x-www-form-urlencoded})
+    \begin{itemize}[leftmargin=*,noitemsep]
+        \item \code{username}: test@example.com
+        \item \code{password}: securepassword123
+    \end{itemize}
+    $\rightarrow$ получаете токен
+\end{enumerate}
+
+\subsection{Этап 4. Защитить эндпоинты заметок}
+
+\textbf{Цель:} Только авторизованные пользователи могут работать с заметками.
+
+\subsubsection{Обновите все CRUD-эндпоинты в \texttt{main.py}}
+
+Добавьте параметр \code{current\_user: User = Depends(get\_current\_user)} во все эндпоинты заметок и фильтруйте по \code{owner\_id}:
+
+\begin{lstlisting}[style=python,caption=protected\_endpoints.py]
+# Создание заметки (защищено)
+@app.post("/api/notes/", response_model=NoteOut, summary="Создание заметки")
+def create_note(
+    note: NoteCreate,
+    session: Session = Depends(get_session),
+    current_user: User = Depends(get_current_user)
+):
+    """Создает новую заметку для текущего пользователя"""
+    db_note = Note(
+        title=note.title,
+        content=note.content,
+        owner_id=current_user.id  # Привязка к текущему пользователю
+    )
+    session.add(db_note)
+    session.commit()
+    session.refresh(db_note)
+    return db_note
+
+# Получение всех заметок (только свои)
+@app.get("/api/notes/", response_model=list[NoteOut], summary="Получение всех заметок")
+def get_all_notes(
+    session: Session = Depends(get_session),
+    current_user: User = Depends(get_current_user)
+):
+    """Возвращает все заметки текущего пользователя"""
+    return session.query(Note).filter(Note.owner_id == current_user.id).all()
+
+# Получение одной заметки
+@app.get("/api/notes/{item_id}", response_model=NoteOut, summary="Получение заметки по ID")
+def get_note(
+    item_id: int,
+    session: Session = Depends(get_session),
+    current_user: User = Depends(get_current_user)
+):
+    """Возвращает заметку по ID, только если она принадлежит текущему пользователю"""
+    note = session.query(Note).filter(
+        Note.id == item_id,
+        Note.owner_id == current_user.id
+    ).first()
+    
+    if not note:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Note not found or not owned by you"
+        )
+    return note
+
+# Обновление заметки
+@app.patch("/api/notes/{item_id}", response_model=NoteOut, summary="Обновление заметки")
+def update_note(
+    item_id: int,
+    note_update: NoteCreate,
+    session: Session = Depends(get_session),
+    current_user: User = Depends(get_current_user)
+):
+    """Обновляет заметку, только если она принадлежит текущему пользователю"""
+    note = session.query(Note).filter(
+        Note.id == item_id,
+        Note.owner_id == current_user.id
+    ).first()
+    
+    if not note:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Note not found or not owned by you"
+        )
+    
+    note.title = note_update.title
+    note.content = note_update.content
+    session.commit()
+    session.refresh(note)
+    return note
+
+# Удаление заметки
+@app.delete("/api/notes/{item_id}", summary="Удаление заметки")
+def delete_note(
+    item_id: int,
+    session: Session = Depends(get_session),
+    current_user: User = Depends(get_current_user)
+):
+    """Удаляет заметку, только если она принадлежит текущему пользователю"""
+    note = session.query(Note).filter(
+        Note.id == item_id,
+        Note.owner_id == current_user.id
+    ).first()
+    
+    if not note:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Note not found or not owned by you"
+        )
+    
+    session.delete(note)
+    session.commit()
+    return {"detail": "Note deleted successfully"}
+\end{lstlisting}
+
+\textbf{Тест в Postman:}
+\begin{enumerate}[leftmargin=*,noitemsep]
+    \item Получите токен через \myendpoint{/token}
+    \item \httpmethod{POST} \myendpoint{/api/notes/} с заголовком:
+    \begin{verbatim}
+Authorization: Bearer <ваш_токен>
+Content-Type: application/json
+
+{
+    "title": "Тестовая заметка",
+    "content": "Содержимое заметки"
+}
+    \end{verbatim}
+    $\rightarrow$ заметка создается
+    
+    \item Без заголовка авторизации $\rightarrow$ \code{401 Unauthorized}
+    \item Попытка доступа к чужой заметке $\rightarrow$ \code{404 Not Found}
+\end{enumerate}
+
+\subsection{Этап 5. Настроить axios-клиент на автоматическую отправку токена}
+
+\textbf{Цель:} Клиент автоматически авторизован, если есть токен.
+
+\subsubsection{Обновите \texttt{api.ts} (или ваш файл с axios)}
+
+\begin{lstlisting}[style=typescript,caption=api.ts]
+import axios, { AxiosInstance, InternalAxiosRequestConfig } from "axios";
+
+// Создание инстанса axios с базовыми настройками
+const api: AxiosInstance = axios.create({
+  baseURL: "/api",
+  timeout: 10000,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
+// Интерцептор для добавления токена в каждый запрос
+api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
+  const token = localStorage.getItem("access_token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+// Интерцептор для обработки ошибок 401 (неавторизован)
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      // Удаляем токен при ошибке 401
+      localStorage.removeItem("access_token");
+      
+      // Можно добавить редирект на страницу входа
+      window.location.href = "/login";
+    }
+    return Promise.reject(error);
+  }
+);
+
+export default api;
+\end{lstlisting}
+
+\textbf{Проверка:} убедитесь, что файл обновлен и нет ошибок компиляции TypeScript.
+
+\subsection{Этап 6. Добавить аутентификационный сервис и UI-страницы}
+
+\textbf{Цель:} Пользователь может зайти через браузер.
+
+\subsubsection{Создайте \texttt{auth.ts}}
+
+\begin{lstlisting}[style=typescript,caption=auth.ts]
+import api from "./api";
+
+/**
+ * Аутентифицирует пользователя и сохраняет токен
+ * @param email Email пользователя
+ * @param password Пароль пользователя
+ */
+export const login = async (email: string, password: string): Promise<void> => {
+  try {
+    const response = await api.post<{ access_token: string }>("/token", 
+      new URLSearchParams({
+        username: email,
+        password: password,
+      }),
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      }
+    );
+    
+    localStorage.setItem("access_token", response.data.access_token);
+  } catch (error) {
+    console.error("Login failed:", error);
+    throw error;
+  }
+};
+
+/**
+ * Регистрирует нового пользователя
+ * @param email Email пользователя
+ * @param password Пароль пользователя
+ */
+export const register = async (email: string, password: string): Promise<void> => {
+  try {
+    await api.post("/register", { email, password });
+  } catch (error) {
+    console.error("Registration failed:", error);
+    throw error;
+  }
+};
+
+/** Выход из системы */
+export const logout = (): void => {
+  localStorage.removeItem("access_token");
+};
+
+/** Проверяет, авторизован ли пользователь */
+export const isAuthenticated = (): boolean => {
+  return !!localStorage.getItem("access_token");
+};
+\end{lstlisting}
+
+\subsubsection{Создайте \texttt{Login.tsx}}
+
+\begin{lstlisting}[style=typescript,caption=Login.tsx]
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Box, TextField, Button, Typography, Alert } from "@mui/material";
+import { login } from "./auth";
+
+export default function Login() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+    
+    try {
+      await login(email, password);
+      navigate("/notes", { replace: true });
+    } catch (err) {
+      setError("Неверный email или пароль. Попробуйте еще раз.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <Box sx={{ maxWidth: 400, mx: "auto", mt: 8, p: 3 }}>
+      <Typography variant="h4" gutterBottom>
+        Вход в систему
+      </Typography>
+      
+      {error && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+      )}
+      
+      <Box component="form" onSubmit={handleSubmit} noValidate>
+        <TextField
+          margin="normal"
+          required
+          fullWidth
+          label="Email"
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          disabled={loading}
+          autoFocus
+        />
+        
+        <TextField
+          margin="normal"
+          required
+          fullWidth
+          label="Пароль"
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          disabled={loading}
+        />
+        
+        <Button
+          type="submit"
+          fullWidth
+          variant="contained"
+          disabled={loading}
+          sx={{ mt: 3, mb: 2 }}
+        >
+          {loading ? "Вход..." : "Войти"}
+        </Button>
+        
+        <Typography variant="body2" align="center">
+          Нет аккаунта?{" "}
+          <Button 
+            variant="text" 
+            onClick={() => navigate("/register")}
+            disabled={loading}
+          >
+            Зарегистрироваться
+          </Button>
+        </Typography>
+      </Box>
+    </Box>
+  );
+}
+\end{lstlisting}
+
+\subsubsection{Создайте \texttt{Register.tsx}}
+
+\begin{lstlisting}[style=typescript,caption=Register.tsx]
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Box, TextField, Button, Typography, Alert } from "@mui/material";
+import { register, login } from "./auth";
+
+export default function Register() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+    
+    if (password !== confirmPassword) {
+      setError("Пароли не совпадают");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      // Регистрация пользователя
+      await register(email, password);
+      
+      // Автоматический вход после регистрации
+      await login(email, password);
+      
+      navigate("/notes", { replace: true });
+    } catch (err: any) {
+      setError(err.response?.data?.detail || "Ошибка регистрации. Попробуйте другой email.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <Box sx={{ maxWidth: 400, mx: "auto", mt: 8, p: 3 }}>
+      <Typography variant="h4" gutterBottom>
+        Регистрация
+      </Typography>
+      
+      {error && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+      )}
+      
+      <Box component="form" onSubmit={handleSubmit} noValidate>
+        <TextField
+          margin="normal"
+          required
+          fullWidth
+          label="Email"
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          disabled={loading}
+          autoFocus
+        />
+        
+        <TextField
+          margin="normal"
+          required
+          fullWidth
+          label="Пароль"
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          disabled={loading}
+        />
+        
+        <TextField
+          margin="normal"
+          required
+          fullWidth
+          label="Подтвердите пароль"
+          type="password"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          disabled={loading}
+        />
+        
+        <Button
+          type="submit"
+          fullWidth
+          variant="contained"
+          disabled={loading}
+          sx={{ mt: 3, mb: 2 }}
+        >
+          {loading ? "Регистрация..." : "Зарегистрироваться"}
+        </Button>
+        
+        <Typography variant="body2" align="center">
+          Уже есть аккаунт?{" "}
+          <Button 
+            variant="text" 
+            onClick={() => navigate("/login")}
+            disabled={loading}
+          >
+            Войти
+          </Button>
+        </Typography>
+      </Box>
+    </Box>
+  );
+}
+\end{lstlisting}
+
+\subsubsection{Создайте \texttt{ProtectedRoute.tsx}}
+
+\begin{lstlisting}[style=typescript,caption=ProtectedRoute.tsx]
+import { Navigate, Outlet } from "react-router-dom";
+import { isAuthenticated } from "./auth";
+
+/**
+ * Компонент-обертка для защиты маршрутов.
+ * Если пользователь не авторизован, перенаправляет на страницу входа.
+ */
+export default function ProtectedRoute() {
+  return isAuthenticated() ? <Outlet /> : <Navigate to="/login" replace />;
+}
+\end{lstlisting}
+
+\subsubsection{Обновите \texttt{router.ts}}
+
+\begin{lstlisting}[style=typescript,caption=router.ts]
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import App from "./App";
+import Notes from "./Notes";
+import NoteCreate from "./NoteCreate";
+import NoteEdit from "./NoteEdit";
+import Login from "./Login";
+import Register from "./Register";
+import ProtectedRoute from "./ProtectedRoute";
+
+export const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <App />,
+    children: [
+      // Публичные маршруты
+      { path: "/login", element: <Login /> },
+      { path: "/register", element: <Register /> },
+      
+      // Защищенные маршруты
+      {
+        element: <ProtectedRoute />,
+        children: [
+          { index: true, element: <Notes /> },
+          {
+            path: "notes",
+            children: [
+              { index: true, element: <Notes /> },
+              { path: "create", element: <NoteCreate /> },
+              { path: ":id/edit", element: <NoteEdit /> },
+            ],
+          },
+        ],
+      },
+    ],
+  },
+]);
+
+// В main.tsx или index.tsx:
+// ReactDOM.createRoot(document.getElementById('root')!).render(
+//   <React.StrictMode>
+//     <RouterProvider router={router} />
+//   </React.StrictMode>
+// );
+\end{lstlisting}
+
+\textbf{Тест в браузере:}
+\begin{enumerate}[leftmargin=*,noitemsep]
+    \item Зайдите на \myendpoint{/} $\rightarrow$ перенаправляет на \myendpoint{/login}
+    \item Зарегистрируйтесь $\rightarrow$ автоматический вход $\rightarrow$ переход на \myendpoint{/notes}
+    \item Создайте заметку — она сохраняется и отображается
+    \item Обновите страницу — авторизация сохраняется (токен в localStorage)
+\end{enumerate}
+
+\subsection{Этап 7. Добавить кнопку «Выйти»}
+
+\textbf{Цель:} Возможность выхода из системы.
+
+\subsubsection{Обновите \texttt{App.tsx}}
+
+\begin{lstlisting}[style=typescript,caption=App.tsx]
+import { Outlet, useNavigate } from "react-router-dom";
+import { Button, Box, AppBar, Toolbar, Typography } from "@mui/material";
+import { isAuthenticated, logout } from "./auth";
+
+export default function App() {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login", { replace: true });
+  };
+
+  return (
+    <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
+      <AppBar position="static" color="primary">
+        <Toolbar>
+          <Typography variant="h6" sx={{ flexGrow: 1 }}>
+            Менеджер заметок
+          </Typography>
+          {isAuthenticated() && (
+            <Button
+              color="inherit"
+              onClick={handleLogout}
+              sx={{ "&:hover": { backgroundColor: "rgba(255,255,255,0.1)" } }}
+            >
+              Выйти
+            </Button>
+          )}
+        </Toolbar>
+      </AppBar>
+      
+      <Box component="main" sx={{ p: 3, flexGrow: 1 }}>
+        <Outlet />
+      </Box>
+      
+      <Box component="footer" sx={{ p: 2, textAlign: "center", bgcolor: "grey.100" }}>
+        <Typography variant="body2" color="text.secondary">
+          © {new Date().getFullYear()} Менеджер заметок. Все права защищены.
+        </Typography>
+      </Box>
+    </Box>
+  );
+}
+\end{lstlisting}
+
+\textbf{Тест:}
+\begin{itemize}[leftmargin=*,noitemsep]
+    \item После входа в шапке появляется кнопка «Выйти»
+    \item Клик по кнопке $\rightarrow$ выход и редирект на \myendpoint{/login}
+    \item После выхода доступ к \myendpoint{/notes} невозможен без входа
+\end{itemize}
+
+\section{Финальная архитектура системы}
+
+\begin{table}[h]
+\centering
+\begin{tabularx}{\textwidth}{lX}
+\toprule
+\textbf{Компонент} & \textbf{Состояние} \\
+\midrule
+База данных & Поддерживает пользователей и привязку заметок через \code{owner\_id} \\
+FastAPI сервер & Реализует полный цикл аутентификации: регистрация, вход, JWT, защита эндпоинтов \\
+React клиент & Автоматическая авторизация через axios interceptors, защита маршрутов, UI для управления аутентификацией \\
+Postman & Все эндпоинты протестированы с JWT-токенами \\
+Безопасность & Пароли хешируются, токены имеют ограниченное время жизни, разделение прав доступа \\
+\bottomrule
+\end{tabularx}
+\caption{Состояние системы после внедрения JWT-аутентификации}
+\end{table}
+
+\section{Проверка корректности и тестирование}
+
+\subsection{Тестирование через Postman}
+
+\begin{enumerate}[leftmargin=*,noitemsep]
+    \item \textbf{Регистрация:} \httpmethod{POST} \myendpoint{/register} с корректными данными $\rightarrow$ получение токена
+    \item \textbf{Вход:} \httpmethod{POST} \myendpoint{/token} с корректными учетными данными $\rightarrow$ получение токена
+    \item \textbf{Создание заметки:} \httpmethod{POST} \myendpoint{/api/notes/} с токеном $\rightarrow$ успешное создание
+    \item \textbf{Попытка доступа без токена:} любой защищенный эндпоинт без заголовка $\rightarrow$ \code{401 Unauthorized}
+    \item \textbf{Попытка доступа к чужой заметке:} запрос к заметке другого пользователя $\rightarrow$ \code{404 Not Found}
+    \item \textbf{Истечение срока действия токена:} после 30 минут запрос с токеном $\rightarrow$ \code{401 Unauthorized}
+\end{enumerate}
+
+\subsection{Тестирование в браузере}
+
+\begin{enumerate}[leftmargin=*,noitemsep]
+    \item \textbf{Первый вход:} переход на \myendpoint{/} $\rightarrow$ редирект на \myendpoint{/login}
+    \item \textbf{Регистрация:} успешная регистрация $\rightarrow$ автоматический вход
+    \item \textbf{Работа с заметками:} создание, редактирование, удаление работают корректно
+    \item \textbf{Обновление страницы:} авторизация сохраняется (токен в localStorage)
+    \item \textbf{Выход:} кнопка «Выйти» работает, редирект на \myendpoint{/login}
+    \item \textbf{Попытка доступа к защищенным маршрутам после выхода:} редирект на \myendpoint{/login}
+\end{enumerate}
+
+\section{Заключение}
+
+Система аутентификации и авторизации успешно внедрена в приложение. Ключевые достижения:
+
+\begin{itemize}[leftmargin=*,noitemsep]
+    \item \textbf{Безопасность:} пароли хешируются с использованием bcrypt, JWT-токены имеют ограниченное время жизни
+    \item \textbf{Разделение прав доступа:} пользователи видят только свои заметки
+    \item \textbf{Удобство использования:} автоматическая авторизация в клиенте, интуитивно понятный UI
+    \item \textbf{Масштабируемость:} архитектура позволяет легко добавлять новые функции безопасности (роли, refresh-токены)
+    \item \textbf{Тестируемость:} каждый этап был протестирован отдельно через Postman и браузер
+\end{itemize}
+
+Дальнейшие улучшения могут включать:
+\begin{itemize}[leftmargin=*,noitemsep]
+    \item Добавление refresh-токенов для продления сессии без повторного входа
+    \item Реализация подтверждения email при регистрации
+    \item Добавление двухфакторной аутентификации
+    \item Логирование событий безопасности
+    \item Rate limiting для эндпоинтов аутентификации
+\end{itemize}
+
+Данное руководство обеспечивает надежную основу для безопасного веб-приложения с современной аутентификацией на основе JWT.
+
+\end{document}
