@@ -4,3 +4,5 @@
 *.pdf
 *.toc
 plan.txt
+.~*
+*.exe

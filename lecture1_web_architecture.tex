@@ -1,0 +1,734 @@
+% !TeX program = xelatex
+\documentclass[12pt,a4paper]{article}
+\usepackage{fontspec}
+\usepackage{polyglossia}
+\setmainlanguage{russian}
+\setmainfont{DejaVu Serif}
+\setmonofont{DejaVu Sans Mono}
+\usepackage[a4paper,margin=2cm]{geometry}
+\usepackage{microtype}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{listings}
+\hypersetup{colorlinks=true,linkcolor=blue!50!black,urlcolor=blue!60!black}
+\lstset{basicstyle=\ttfamily\small,breaklines=true,frame=single,columns=fullflexible,keepspaces=true,showstringspaces=false,tabsize=4}
+\title{Конспект первой лекции\\\large «Проектирование архитектуры веб-приложений»}
+\date{}
+\begin{document}
+\maketitle
+\tableofcontents
+\newpage
+
+\section{Общие сведения}
+\subsection{Тема}
+Варианты архитектур веб-приложений. От простого серверного приложения к клиент--серверным, модульным и микросервисным системам. Мастер-класс создания простейшего REST API на FastAPI с ORM, SQLite, валидацией и пагинацией.
+
+\subsection{Продолжительность}
+3 академических часа.
+
+\subsection{Связь с практической работой №1}
+Практическая работа №1 требует создать REST API-сервис с CRUD, SQLite или другой СУБД, ORM, полной валидацией и частичной загрузкой данных. Поэтому мастер-класс строится как полностью готовый пример именно такого сервиса.
+
+На первой лекции рассматриваются \textbf{только веб-приложения}. React не вводится: он появляется на следующем этапе, когда уже имеется готовый API.
+
+\section{План занятия}
+\begin{tabularx}{\textwidth}{@{}lXr@{}}
+\toprule
+Время & Содержание & Длительность\\
+\midrule
+0:00--0:10 & Что такое архитектура веб-приложения & 10 мин\\
+0:10--0:55 & Основные варианты архитектур веб-приложений & 45 мин\\
+0:55--1:10 & Сравнение и выбор архитектуры курса & 15 мин\\
+1:10--1:25 & HTTP, REST и CRUD & 15 мин\\
+1:25--1:35 & Создание проекта и первый endpoint & 10 мин\\
+1:35--1:50 & Pydantic и первый API & 15 мин\\
+1:50--2:10 & SQLite и SQLAlchemy ORM & 20 мин\\
+2:10--2:35 & CRUD & 25 мин\\
+2:35--2:55 & Пагинация, валидация и проверка & 20 мин\\
+2:55--3:00 & Связь с практической работой №1 & 5 мин\\
+\bottomrule
+\end{tabularx}
+
+\section{Часть I. Варианты архитектур веб-приложений}
+\subsection{Что такое архитектура}
+Архитектура отвечает на вопрос: как части веб-приложения разделены и как они взаимодействуют.
+
+Для веб-приложения обычно рассматриваются браузер или другой HTTP-клиент, серверная часть, база данных и внешние сервисы. Фреймворк не является архитектурой сам по себе: FastAPI, Django или Spring являются инструментами реализации.
+
+\subsection{Сервер генерирует HTML}
+Простейшая схема:
+\begin{verbatim}
+Браузер --HTTP--> Web-приложение --SQL--> База данных
+                    |
+                    +---- HTML ----> Браузер
+\end{verbatim}
+Сервер получает запрос, выполняет логику, обращается к БД и формирует HTML-страницу.
+
+\subsection{Многослойное серверное приложение}
+Даже один серверный процесс можно логически разделить:
+\begin{verbatim}
+HTTP
+ |
+v
+Presentation
+ |
+v
+Application / Business Logic
+ |
+v
+Data Access
+ |
+v
+Database
+\end{verbatim}
+Важно: логическое разделение слоёв не означает обязательного разделения на отдельные процессы или серверы.
+
+\subsection{SPA + REST API}
+\begin{verbatim}
+Браузер / SPA --HTTP+JSON--> REST API --ORM--> База данных
+\end{verbatim}
+Сервер отдаёт данные, а интерфейс формируется клиентским приложением. API потенциально может использоваться разными клиентами.
+
+\subsection{Монолит}
+Монолит -- единое разворачиваемое серверное приложение. Оно может содержать API, бизнес-логику и доступ к данным внутри одного процесса.
+
+\begin{verbatim}
++----------------------------------+
+|          Web application         |
+| API | Business | Data Access     |
++----------------+-----------------+
+                 |
+                 v
+              Database
+\end{verbatim}
+
+Монолит не является синонимом плохой архитектуры. Для небольшой системы он часто является самым простым решением.
+
+\subsection{Модульный монолит}
+Функциональность разделена на модули, но приложение по-прежнему разворачивается как единое целое:
+\begin{verbatim}
++---------------------------------------+
+|              Application             |
+|  +---------+ +---------+ +---------+ |
+|  | Users   | | Orders  | | Catalog | |
+|  +---------+ +---------+ +---------+ |
++-------------------+-------------------+
+                    |
+                    v
+                 Database
+\end{verbatim}
+
+\subsection{Микросервисная архитектура}
+Функциональность разделяется на самостоятельно разворачиваемые сервисы:
+\begin{verbatim}
+                  Client
+                    |
+                    v
+               API Gateway
+              /     |      \\
+             v      v       v
+          Users   Orders   Catalog
+            |        |        |
+           DB       DB       DB
+\end{verbatim}
+Распределённость даёт независимость развёртывания, но создаёт сетевые ошибки, задержки, проблемы согласованности, наблюдаемости и распределённых операций.
+
+\subsection{Сравнение}
+\begin{longtable}{@{}p{0.23\textwidth}p{0.30\textwidth}p{0.37\textwidth}@{}}
+\toprule
+Архитектура & Идея & Особенность\\
+\midrule
+Серверный HTML & Сервер формирует HTML & Простая схема взаимодействия\\
+Многослойное приложение & Разделение ответственности внутри сервера & Упрощает развитие кода\\
+SPA + API & UI и API разделены & Один API может иметь разных клиентов\\
+Монолит & Единое разворачиваемое приложение & Простота эксплуатации\\
+Модульный монолит & Единое приложение с модулями & Структура без сетевой распределённости\\
+Микросервисы & Несколько независимых сервисов & Гибкость ценой распределённой сложности\\
+\bottomrule
+\end{longtable}
+
+\section{Часть II. Архитектура мастер-класса}
+На занятии реализуется:
+\begin{verbatim}
+HTTP client
+    |
+    v
+FastAPI
+    |
+    +-- Pydantic validation
+    |
+    +-- CRUD
+    |
+    v
+SQLAlchemy ORM
+    |
+    v
+SQLite
+\end{verbatim}
+Это небольшой монолитный REST-сервис. Его затем можно подключить к отдельному веб-клиенту.
+
+\section{Часть III. HTTP, REST и CRUD}
+Основные HTTP-методы:
+\begin{center}
+\begin{tabular}{ll}
+\toprule
+GET & получить ресурс\\
+POST & создать ресурс\\
+PUT & заменить ресурс\\
+PATCH & частично изменить ресурс\\
+DELETE & удалить ресурс\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Для ресурса \texttt{books}:
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+Метод & URL & Назначение\\
+\midrule
+GET & /books & список книг\\
+GET & /books/1 & книга с id=1\\
+POST & /books & создание\\
+PUT & /books/1 & изменение\\
+DELETE & /books/1 & удаление\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Часть IV. Мастер-класс}
+\subsection{Предметная область}
+Используем каталог книг. Поля: \texttt{id}, \texttt{title}, \texttt{author}, \texttt{year}.
+
+\subsection{Шаг 1. Создание проекта}
+\begin{lstlisting}[language=bash]
+mkdir books-api
+cd books-api
+python -m venv .venv
+\end{lstlisting}
+Активация Windows PowerShell:
+\begin{lstlisting}[language=bash]
+.venv\Scripts\Activate.ps1
+\end{lstlisting}
+Linux/macOS:
+\begin{lstlisting}[language=bash]
+source .venv/bin/activate
+\end{lstlisting}
+Установка зависимостей:
+\begin{lstlisting}[language=bash]
+pip install fastapi uvicorn sqlalchemy
+pip freeze > requirements.txt
+\end{lstlisting}
+
+\subsection{Шаг 2. Первый FastAPI endpoint}
+Создать \texttt{main.py}:
+\begin{lstlisting}[language=Python]
+from fastapi import FastAPI
+
+app = FastAPI(title="Books API")
+
+@app.get("/")
+def root():
+    return {"message": "Books API"}
+\end{lstlisting}
+Запуск:
+\begin{lstlisting}[language=bash]
+uvicorn main:app --reload
+\end{lstlisting}
+Проверить \texttt{http://127.0.0.1:8000/} и документацию \texttt{/docs}.
+
+\subsection{Шаг 3. Pydantic-модели}
+Добавить:
+\begin{lstlisting}[language=Python]
+from pydantic import BaseModel
+
+class BookCreate(BaseModel):
+    title: str
+    author: str
+    year: int
+
+class Book(BookCreate):
+    id: int
+\end{lstlisting}
+\texttt{BookCreate} используется для входных данных, \texttt{Book} -- для ответа API.
+
+\subsection{Шаг 4. GET списка: временное хранилище}
+Для первого понимания CRUD можно сначала показать хранение в памяти:
+\begin{lstlisting}[language=Python]
+books: list[Book] = []
+next_id = 1
+
+@app.get("/books", response_model=list[Book])
+def get_books():
+    return books
+\end{lstlisting}
+После демонстрации сразу поставить вопрос: что произойдёт после перезапуска? Данные исчезнут. Значит, нужна БД.
+
+\subsection{Шаг 5. SQLite и SQLAlchemy}
+Добавить импорты:
+\begin{lstlisting}[language=Python]
+from sqlalchemy import create_engine, select
+from sqlalchemy.orm import (
+    DeclarativeBase,
+    Mapped,
+    Session,
+    mapped_column,
+    sessionmaker,
+)
+\end{lstlisting}
+Настроить БД:
+\begin{lstlisting}[language=Python]
+DATABASE_URL = "sqlite:///./books.db"
+
+engine = create_engine(
+    DATABASE_URL,
+    connect_args={"check_same_thread": False},
+)
+
+SessionLocal = sessionmaker(
+    autocommit=False,
+    autoflush=False,
+    bind=engine,
+)
+
+class Base(DeclarativeBase):
+    pass
+\end{lstlisting}
+ORM-модель:
+\begin{lstlisting}[language=Python]
+class BookDB(Base):
+    __tablename__ = "books"
+
+    id: Mapped[int] = mapped_column(
+        primary_key=True,
+        index=True,
+    )
+    title: Mapped[str]
+    author: Mapped[str]
+    year: Mapped[int]
+
+Base.metadata.create_all(bind=engine)
+\end{lstlisting}
+
+\subsection{Шаг 6. Сессия БД}
+\begin{lstlisting}[language=Python]
+from collections.abc import Generator
+from fastapi import Depends
+
+def get_db() -> Generator[Session, None, None]:
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+\end{lstlisting}
+Смысл dependency: каждый запрос получает сессию, после завершения запроса сессия закрывается.
+
+\subsection{Шаг 7. GET списка с пагинацией}
+\begin{lstlisting}[language=Python]
+from fastapi import Query
+
+@app.get("/books", response_model=list[Book])
+def get_books(
+    skip: int = Query(0, ge=0),
+    limit: int = Query(10, ge=1, le=100),
+    db: Session = Depends(get_db),
+):
+    statement = (
+        select(BookDB)
+        .offset(skip)
+        .limit(limit)
+    )
+    return db.scalars(statement).all()
+\end{lstlisting}
+Проверить:
+\begin{verbatim}
+GET /books
+GET /books?skip=0&limit=2
+GET /books?skip=2&limit=2
+\end{verbatim}
+
+\subsection{Шаг 8. GET одного объекта}
+\begin{lstlisting}[language=Python]
+from fastapi import HTTPException
+
+@app.get("/books/{book_id}", response_model=Book)
+def get_book(
+    book_id: int,
+    db: Session = Depends(get_db),
+):
+    book = db.get(BookDB, book_id)
+    if book is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Book not found",
+        )
+    return book
+\end{lstlisting}
+
+\subsection{Шаг 9. POST}
+\begin{lstlisting}[language=Python]
+@app.post(
+    "/books",
+    response_model=Book,
+    status_code=201,
+)
+def create_book(
+    book_data: BookCreate,
+    db: Session = Depends(get_db),
+):
+    book = BookDB(
+        title=book_data.title,
+        author=book_data.author,
+        year=book_data.year,
+    )
+    db.add(book)
+    db.commit()
+    db.refresh(book)
+    return book
+\end{lstlisting}
+Проверить через \texttt{/docs}, например:
+\begin{lstlisting}
+{
+  "title": "Война и мир",
+  "author": "Лев Толстой",
+  "year": 1869
+}
+\end{lstlisting}
+
+\subsection{Шаг 10. PUT}
+\begin{lstlisting}[language=Python]
+@app.put("/books/{book_id}", response_model=Book)
+def update_book(
+    book_id: int,
+    book_data: BookCreate,
+    db: Session = Depends(get_db),
+):
+    book = db.get(BookDB, book_id)
+    if book is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Book not found",
+        )
+
+    book.title = book_data.title
+    book.author = book_data.author
+    book.year = book_data.year
+
+    db.commit()
+    db.refresh(book)
+    return book
+\end{lstlisting}
+
+\subsection{Шаг 11. DELETE}
+\begin{lstlisting}[language=Python]
+@app.delete("/books/{book_id}", status_code=204)
+def delete_book(
+    book_id: int,
+    db: Session = Depends(get_db),
+):
+    book = db.get(BookDB, book_id)
+    if book is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Book not found",
+        )
+
+    db.delete(book)
+    db.commit()
+\end{lstlisting}
+
+\section{Часть V. Полная финальная версия main.py}
+Ниже находится версия, которую преподаватель может просто показать и выполнить без дописывания кода по ходу мастер-класса.
+
+\begin{lstlisting}[language=Python]
+from collections.abc import Generator
+
+from fastapi import Depends, FastAPI, HTTPException, Query
+from pydantic import BaseModel, Field
+from sqlalchemy import create_engine, select
+from sqlalchemy.orm import (
+    DeclarativeBase,
+    Mapped,
+    Session,
+    mapped_column,
+    sessionmaker,
+)
+
+app = FastAPI(title="Books API")
+
+DATABASE_URL = "sqlite:///./books.db"
+
+engine = create_engine(
+    DATABASE_URL,
+    connect_args={"check_same_thread": False},
+)
+
+SessionLocal = sessionmaker(
+    autocommit=False,
+    autoflush=False,
+    bind=engine,
+)
+
+
+class Base(DeclarativeBase):
+    pass
+
+
+class BookDB(Base):
+    __tablename__ = "books"
+
+    id: Mapped[int] = mapped_column(
+        primary_key=True,
+        index=True,
+    )
+    title: Mapped[str]
+    author: Mapped[str]
+    year: Mapped[int]
+
+
+Base.metadata.create_all(bind=engine)
+
+
+class BookCreate(BaseModel):
+    title: str = Field(min_length=1, max_length=200)
+    author: str = Field(min_length=1, max_length=200)
+    year: int = Field(ge=0, le=2100)
+
+
+class Book(BookCreate):
+    id: int
+
+
+def get_db() -> Generator[Session, None, None]:
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+
+@app.get("/")
+def root():
+    return {"message": "Books API"}
+
+
+@app.get("/books", response_model=list[Book])
+def get_books(
+    skip: int = Query(0, ge=0),
+    limit: int = Query(10, ge=1, le=100),
+    db: Session = Depends(get_db),
+):
+    statement = (
+        select(BookDB)
+        .offset(skip)
+        .limit(limit)
+    )
+    return db.scalars(statement).all()
+
+
+@app.get("/books/{book_id}", response_model=Book)
+def get_book(
+    book_id: int,
+    db: Session = Depends(get_db),
+):
+    book = db.get(BookDB, book_id)
+    if book is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Book not found",
+        )
+    return book
+
+
+@app.post(
+    "/books",
+    response_model=Book,
+    status_code=201,
+)
+def create_book(
+    book_data: BookCreate,
+    db: Session = Depends(get_db),
+):
+    book = BookDB(
+        title=book_data.title,
+        author=book_data.author,
+        year=book_data.year,
+    )
+    db.add(book)
+    db.commit()
+    db.refresh(book)
+    return book
+
+
+@app.put("/books/{book_id}", response_model=Book)
+def update_book(
+    book_id: int,
+    book_data: BookCreate,
+    db: Session = Depends(get_db),
+):
+    book = db.get(BookDB, book_id)
+    if book is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Book not found",
+        )
+
+    book.title = book_data.title
+    book.author = book_data.author
+    book.year = book_data.year
+
+    db.commit()
+    db.refresh(book)
+    return book
+
+
+@app.delete("/books/{book_id}", status_code=204)
+def delete_book(
+    book_id: int,
+    db: Session = Depends(get_db),
+):
+    book = db.get(BookDB, book_id)
+    if book is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Book not found",
+        )
+
+    db.delete(book)
+    db.commit()
+\end{lstlisting}
+
+\section{Проверка мастер-класса}
+Запуск:
+\begin{lstlisting}[language=bash]
+uvicorn main:app --reload
+\end{lstlisting}
+Открыть \texttt{http://127.0.0.1:8000/docs}.
+
+Последовательность демонстрации:
+\begin{enumerate}
+    \item создать три книги;
+    \item выполнить \texttt{GET /books};
+    \item выполнить \texttt{GET /books/1};
+    \item выполнить \texttt{GET /books/999} и показать 404;
+    \item изменить книгу через \texttt{PUT};
+    \item снова получить её через \texttt{GET};
+    \item удалить её через \texttt{DELETE};
+    \item снова получить её и показать 404;
+    \item проверить пагинацию с разными \texttt{skip} и \texttt{limit};
+    \item остановить сервер и запустить снова;
+    \item показать, что данные сохранились в \texttt{books.db};
+    \item отправить заведомо некорректные данные и показать автоматическую валидацию.
+\end{enumerate}
+
+Примеры данных:
+\begin{lstlisting}
+{
+  "title": "Война и мир",
+  "author": "Лев Толстой",
+  "year": 1869
+}
+\end{lstlisting}
+\begin{lstlisting}
+{
+  "title": "Преступление и наказание",
+  "author": "Фёдор Достоевский",
+  "year": 1866
+}
+\end{lstlisting}
+\begin{lstlisting}
+{
+  "title": "Мастер и Маргарита",
+  "author": "Михаил Булгаков",
+  "year": 1967
+}
+\end{lstlisting}
+
+\section{Педагогические акценты во время мастер-класса}
+Не следует просто последовательно печатать код. Каждый существенный фрагмент вводится как ответ на проблему.
+
+\begin{longtable}{@{}p{0.28\textwidth}p{0.62\textwidth}@{}}
+\toprule
+Проблема & Что вводится\\
+\midrule
+Нужно принимать HTTP-запросы & FastAPI\\
+Нужно описать данные & Pydantic\\
+Нужно хранить данные между запросами & SQLite\\
+Нужно работать с БД из Python & SQLAlchemy ORM\\
+Нужно получить конкретный объект & GET /books/\{id\}\\
+Нужно создать объект & POST\\
+Нужно изменить объект & PUT\\
+Нужно удалить объект & DELETE\\
+Нужно не возвращать тысячи строк & Пагинация\\
+Нужно отклонять некорректные данные & Валидация\\
+Нужно сообщать об отсутствии объекта & HTTP 404\\
+\bottomrule
+\end{longtable}
+
+\section{Связь с практической работой №1}
+К концу мастер-класса студенты видят полный минимальный путь:
+\begin{verbatim}
+HTTP request
+    |
+    v
+FastAPI endpoint
+    |
+    v
+Validation
+    |
+    v
+CRUD operation
+    |
+    v
+SQLAlchemy ORM
+    |
+    v
+SQLite
+    |
+    v
+HTTP response
+\end{verbatim}
+
+Практическая работа №1 требует реализовать ту же схему для другой предметной области.
+
+\subsection{Минимальный чек-лист практической работы}
+\begin{enumerate}
+    \item выбрать вариант предметной области;
+    \item определить сущности и их поля;
+    \item создать ORM-модели;
+    \item создать REST endpoints;
+    \item реализовать CRUD;
+    \item добавить валидацию входных данных;
+    \item добавить обработку отсутствующих объектов;
+    \item реализовать пагинацию/частичную загрузку;
+    \item проверить API через Swagger UI или HTTP-клиент;
+    \item убедиться, что данные сохраняются после перезапуска.
+\end{enumerate}
+
+\section{Вопросы студентам по ходу лекции}
+\begin{enumerate}
+    \item Чем серверный HTML отличается от REST API?
+    \item Почему API можно использовать независимо от интерфейса?
+    \item Может ли монолит быть хорошо спроектирован?
+    \item Что нового появляется при переходе от монолита к микросервисам?
+    \item Почему микросервисы не являются автоматически лучшим решением?
+    \item Что произойдёт с данными, если хранить их в списке Python?
+    \item Зачем нужна ORM?
+    \item Зачем нужна серверная валидация, если клиент тоже может проверять данные?
+    \item Зачем нужна пагинация?
+    \item Почему запрос несуществующего объекта должен возвращать 404?
+\end{enumerate}
+
+\section{Итог первой лекции}
+Главная мысль занятия:
+\begin{quote}
+Веб-приложение состоит не только из интерфейса. Клиент взаимодействует с сервером по HTTP; сервер принимает и валидирует запрос, выполняет операцию над предметными данными, обращается к базе данных и возвращает HTTP-ответ.
+\end{quote}
+
+При этом курс начинает с небольшого монолитного REST-сервиса. Далее система усложняется постепенно: сначала появляется отдельный веб-клиент, затем аутентификация и авторизация, после чего -- микросервисное и событийное взаимодействие.
+
+\end{document}
